@@ -1,8 +1,8 @@
 const query1 = `
     CREATE TABLE IF NOT EXISTS "vendors" (
 	    "id" SERIAL ,
-        "room1" integer ,
-        "room2" integer ,
+        "room1" VARCHAR(100) ,
+        "room2" VARCHAR(100) ,
 	    "name" VARCHAR(100) ,
 	    "password" VARCHAR(100) ,
         "email" VARCHAR(100) ,    

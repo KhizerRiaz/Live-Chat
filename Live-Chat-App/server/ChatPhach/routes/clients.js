@@ -8,14 +8,22 @@ router.use(express.json());
 
 // client.connect();
 
-router.get("/", async (req, res) => {
-  client.query(`SELECT * FROM postgres.clients`, (err, result) => {
-    if (!err) {
-      console.log(result.rows);
-      res.send(result.rows);
-      // res.send("ssasd")
+router.get("/getclients", async (req, res) => {
+  client.query(
+    `SELECT * FROM clients where clients.waiting = true`,
+    (err, result) => {
+      if (!err) {
+        // console.log(result.rows);
+        // x = result.rows;
+        res.send(result.rows);
+        // res.send("ssasd")
+      } else {
+        console.log(err.message);
+      }
     }
-  });
+  );
+
+  // console.log(x);
   client.end;
 });
 
@@ -28,7 +36,7 @@ router.post("/", async (req, res) => {
       if (!err) {
         if (!result.rows.length) {
           let insertQuery = `insert into clients (name , email, waiting)
-                            values ('${req.body.name}' , '${req.body.email}', ${req.body.waiting})`;
+                            values ('${req.body.name}' , '${req.body.email}', true)`;
 
           client.query(insertQuery, (err, message) => {
             if (!err) {
@@ -93,12 +101,12 @@ router.get("/notvacant", async (req, res) => {
 
 router.post("/checkroom", async (req, res) => {
   client.query(
-    `SELECT vendors.availabler1 FROM vendors where room1 = ${req.body.room} `,
+    `SELECT vendors.availabler1 FROM vendors where room1 = '${req.body.room}' `,
     (err, result) => {
       if (!err) {
         if (!result.rows.length) {
           client.query(
-            `SELECT vendors.availabler2 FROM vendors where room2 = ${req.body.room} `,
+            `SELECT vendors.availabler2 FROM vendors where room2 = '${req.body.room}' `,
             (err, result) => {
               if (!err) {
                 res.send(result.rows);

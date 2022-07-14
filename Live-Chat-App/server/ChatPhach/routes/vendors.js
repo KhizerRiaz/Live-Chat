@@ -12,7 +12,7 @@ router.post("/", async (req, res) => {
     `select vendors.email from vendors where email = '${req.body.email}'`,
     (err, result) => {
       if (!err) {
-        console.log(req.body.email);
+        console.log(result.rows);
         // console.log(result);
         if (result.rows.length) {
           client.query(
@@ -66,6 +66,56 @@ router.post("/", async (req, res) => {
     }
   );
 
+  client.end;
+});
+
+router.post("/joinroom", async (req, res) => {
+  client.query(
+    `select vendors.room1 , vendors.room2 from vendors where room1 = '${req.body.room}' or room2 = '${req.body.room}'`,
+    (err, result) => {
+      if (!err) {
+        if (result.rows[0].room1 === req.body.room) {
+          // console.log("done");
+          client.query(
+            `update vendors set availabler1 = false where room1 = '${result.rows[0].room1}' and room2 = '${result.rows[0].room2}'`
+          );
+          res.send("DONE1");
+        } else {
+          client.query(
+            `update vendors set availabler2 = false where room1 = '${result.rows[0].room1}' and room2 = '${result.rows[0].room2}'`
+          );
+          res.send("DONE2");
+        }
+      } else {
+        console.log(err.message);
+      }
+    }
+  );
+  client.end;
+});
+
+router.post("/leaveroom", async (req, res) => {
+  client.query(
+    `select vendors.room1 , vendors.room2 from vendors where room1 = '${req.body.room}' or room2 = '${req.body.room}'`,
+    (err, result) => {
+      if (!err) {
+        if (result.rows[0].room1 === req.body.room) {
+          // console.log("done");
+          client.query(
+            `update vendors set availabler1 = true where room1 = '${result.rows[0].room1}' and room2 = '${result.rows[0].room2}'`
+          );
+          res.send("DONE1");
+        } else {
+          client.query(
+            `update vendors set availabler2 = true where room1 = '${result.rows[0].room1}' and room2 = '${result.rows[0].room2}'`
+          );
+          res.send("DONE2");
+        }
+      } else {
+        console.log(err.message);
+      }
+    }
+  );
   client.end;
 });
 

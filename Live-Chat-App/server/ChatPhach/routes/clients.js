@@ -124,4 +124,32 @@ router.post("/checkroom", async (req, res) => {
   client.end;
 });
 
+router.get("/room1list", async (req, res) => {
+  client.query(
+    `SELECT vendors.room1 FROM vendors WHERE availabler1 = false`,
+    (err, result) => {
+      if (!err) {
+        res.send(result.rows[0]);
+      } else {
+        console.log(err.message);
+      }
+    }
+  );
+  client.end;
+});
+
+router.get("/room2list", async (req, res) => {
+  client.query(
+    `SELECT vendors.room2 FROM vendors WHERE availabler2 = false`,
+    (err, result) => {
+      if (!err) {
+        res.send(result.rows[0]);
+      } else {
+        console.log(err.message);
+      }
+    }
+  );
+  client.end;
+});
+
 module.exports = router;

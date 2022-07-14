@@ -9,6 +9,7 @@
     "axios": "^0.27.2",
     "beauty-stars": "^1.1.0",
     "react": "^18.2.0",
+    "react-animated-css": "^1.2.1",
     "react-custom-modal": "^0.0.4",
     "react-dom": "^18.2.0",
     "react-hooks-use-modal": "^2.1.0",

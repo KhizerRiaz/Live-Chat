@@ -5,8 +5,9 @@ import ScrollToBottom from "react-scroll-to-bottom";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
+// const client = require("F:/Live-Chat-App/Phach_Ready/finale/Live-Chat-App/server/ChatPhach");
 
-function ChatBox({ socket, username, room, email }) {
+function ChatBox({ socket, username, rooms, email }) {
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
 
@@ -14,7 +15,7 @@ function ChatBox({ socket, username, room, email }) {
   const sendMessage = async () => {
     if (currentMessage !== "") {
       const messageData = {
-        room: parseInt(room),
+        room: parseInt(rooms),
         author: username,
         message: currentMessage,
         time:
@@ -25,7 +26,7 @@ function ChatBox({ socket, username, room, email }) {
 
       await socket.emit("send_message", messageData);
       await axios.post("http://localhost:3004/chat", {
-        room: parseInt(room),
+        room: parseInt(rooms),
         author: username,
         message: currentMessage,
         email: email,
@@ -36,6 +37,7 @@ function ChatBox({ socket, username, room, email }) {
   };
 
   useEffect(() => {
+    console.log(rooms);
     console.log("firstMessage");
     socket.on("receive_message", (data) => {
       console.log("first");
@@ -46,13 +48,18 @@ function ChatBox({ socket, username, room, email }) {
   }, [socket]);
 
   const handleLeave = async () => {
-    // await axios
-    // .get(`http://localhost:3004/vendors/room`,{"room": room})
-    // .then((response) => (response.data))
-    // .then((json) => json);
-
+    console.log("Clicked");
     socket.emit("leave_room");
-    navigate("/");
+    console.log(rooms, "leaveroom", typeof rooms);
+
+    await axios
+      .post("http://localhost:3004/vendor_room/leaveroom", {
+        room: parseInt(rooms),
+      })
+      .then((response) => console.log(response))
+      .then((json) => json);
+    window.location.reload();
+    console.log("Clicked");
   };
   const [Modal, open, close, isOpen] = useModal("root", {
     preventScroll: true,
@@ -65,9 +72,12 @@ function ChatBox({ socket, username, room, email }) {
     <div className="chat-window">
       <div>
         <div>
+          <button onClick={handleLeave} className="button-leave">
+            Leave
+          </button>
           <p>Do the Rating? {isOpen ? "Yes" : "No"}</p>
           <button onClick={open} className="button-leave">
-            Leave Room
+            Rating
           </button>
           {/* <button onClick={open}>OPEN</button> */}
           <Modal>

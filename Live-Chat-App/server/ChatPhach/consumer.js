@@ -224,3 +224,38 @@ stream.consumer.on("disconnected", function (arg) {
 setTimeout(function () {
   stream.consumer.disconnect();
 }, 3600000);
+
+// 160 - 226
+
+// const { msg } = require("./consumer_sql.js");
+
+// // Function for Kafka Consumer
+// client.connect();
+// const Kafka = require("node-rdkafka");
+// const externalConfig = require("./config");
+
+// const CONSUMER_GROUP_ID = "node-consumer-1";
+
+// const kafkaConf = {
+//   ...externalConfig.kafkaConfig,
+//   ...{
+//     "group.id": CONSUMER_GROUP_ID,
+//     "socket.keepalive.enable": true,
+//     debug: "generic,broker,security",
+//     "session.timeout.ms": 30000,
+//   },
+// };
+
+// const topics = [externalConfig.topic];
+
+// var stream = new Kafka.KafkaConsumer.createReadStream(
+//   kafkaConf,
+//   { "auto.offset.reset": "earliest" },
+//   {
+//     topics: topics,
+//   }
+// );
+
+// stream.on("data", function (message) {
+//   msg(message);
+// });

@@ -37,6 +37,7 @@ router.post("/", async (req, res) => {
                           client.query(updateQuery, (err, result) => {
                             if (!err) {
                               res.send("ok");
+                              console.log("ok");
                             } else {
                               console.log(err.message);
                             }

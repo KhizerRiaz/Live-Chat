@@ -21,6 +21,7 @@ const VendorRegister = () => {
       password !== ""
     ) {
       // socket.emit("join_room", room);
+      console.log("First");
       await axios
         .post("http://localhost:3004/vendors", {
           room1: room1,
@@ -33,6 +34,9 @@ const VendorRegister = () => {
         })
         .then((response) => console.log(response.data))
         .then((json) => json);
+      console.log("Second");
+      console.log(room1);
+      console.log(room2);
     }
     setshowchat(true);
   };
@@ -41,7 +45,7 @@ const VendorRegister = () => {
     <div className="App">
       {!showchat ? (
         <div className="joinChatContainer">
-          <h3>Register as a Vendor</h3>
+          <h3>Login as a Vendor</h3>
           <input
             type="text"
             placeholder="Enter your name..."

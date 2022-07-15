@@ -65,6 +65,7 @@ io.on("connection", (socket) => {
 
   socket.on("send_message", async (data) => {
     socket.to(data.room).emit("receive_message", data);
+    console.log(data.room, typeof data.room, "rec");
     valmsg = data.message;
     rommIn = data.room;
     authr = data.author;

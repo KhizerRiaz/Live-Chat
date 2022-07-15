@@ -126,7 +126,7 @@ router.post("/checkroom", async (req, res) => {
 
 router.get("/room1list", async (req, res) => {
   client.query(
-    `SELECT vendors.room1 FROM vendors WHERE availabler1 = false`,
+    `SELECT vendor_room.room FROM vendor_room WHERE available = true`,
     (err, result) => {
       if (!err) {
         res.send(result.rows[0]);
@@ -140,7 +140,7 @@ router.get("/room1list", async (req, res) => {
 
 router.get("/room2list", async (req, res) => {
   client.query(
-    `SELECT vendors.room2 FROM vendors WHERE availabler2 = false`,
+    `SELECT vendors.room2 FROM vendors WHERE availabler2 = true`,
     (err, result) => {
       if (!err) {
         res.send(result.rows[0]);

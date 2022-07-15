@@ -1,5 +1,5 @@
 import { Animated } from "react-animated-css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import io from "socket.io-client";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -12,14 +12,15 @@ const socket = io.connect("http://localhost:5000");
 const UserRegister = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [room, setroom] = useState("");
+  const [room, setroom] = useState([]);
   const [availableRoom, setavailableRoom] = useState("");
   const navigate = useNavigate();
   const [showChat, setShowChat] = useState(false);
   const [list1, setlist1] = useState([]);
   const [list2, setlist2] = useState([]);
   const [availRoom, setavailRoom] = useState("");
-  const [availRoom2, setavailRoom2] = useState("");
+  const [searchroom, setsearchroom] = useState(false);
+  const [assignroom, setassignroom] = useState(false);
 
   const JoinRoom = async () => {
     if (username === "" && email === "") {
@@ -37,82 +38,64 @@ const UserRegister = () => {
       .then((response) => console.log(response.data))
       .then((json) => json);
 
-    await axios
-      .post("http://localhost:3004/clients/checkroom", {
-        room: room,
-      })
-      .then((response) => setavailableRoom(response.data))
-      .then((json) => json);
-
-    console.log(availableRoom);
-    var num = availableRoom[0].availabler1;
-    if (num === undefined) {
-      num = availableRoom[0].availabler2;
-    }
-    // console.log(num);
-
-    if (num === 0) {
-      console.log("room available");
-      socket.emit("join_room", parseInt(room));
-      setShowChat(true);
-
-      await axios
-        .post(`http://localhost:3004/vendors/room`, { room: room })
-        .then((response) => response)
-        .then((json) => json);
-    } else {
-      console.log("room is not available", email);
-      // setShowChat(false);
-      // await axios
-      //   .put(`http://localhost:3004/clients/${email}`, { waiting: 0 })
-      //   .then((response) => response.data)
-      //   .then((json) => json);
-
-      if (availRoom) {
-        socket.emit("join_room", parseInt(availRoom));
-        setShowChat(true);
-        await axios
-          .post(`http://localhost:3004/vendors/room`, { room: availRoom })
-          .then((response) => response)
-          .then((json) => json);
-      } else if (availRoom2) {
-        socket.emit("join_room", parseInt(availRoom2));
-        setShowChat(true);
-        await axios
-          .post(`http://localhost:3004/vendors/room`, { room: availRoom2 })
-          .then((response) => response)
-          .then((json) => json);
-      } else {
-        console.log("room is not available", email);
-      }
-    }
+    setsearchroom(true);
   };
 
   const GetRoom = async () => {
-    await axios
-      .get("http://localhost:3004/clients/room1list")
-      .then((response) => setlist1(response.data))
-      .then((json) => json);
+    if (assignroom === false) {
+      await axios
+        .get("http://localhost:3004/clients/room1list")
+        .then((response) => setroom(response.data))
+        .then((json) => json);
 
-    await axios
-      .get("http://localhost:3004/clients/room2list")
-      .then((response) => setlist2(response.data))
-      .then((json) => json);
+      await axios
+        .get("http://localhost:3004/clients/room2list")
+        .then((response) => setlist2(response.data))
+        .then((json) => json);
 
-    if (list1 != null || list2 != null) {
-      if (list1 != undefined) {
-        console.log(list1.room1);
-        setavailRoom(list1.room1);
-        console.log(availRoom);
-      } else {
-        console.log(list2.room2);
-        setavailRoom2(list2.room2);
-        console.log(availRoom2);
+      if (room !== null || list2 != null) {
+        if (room.room !== undefined) {
+          // console.log(room);
+          console.log(room.room, "joinroom", typeof room.room);
+          socket.emit("join_room", parseInt(room.room));
+          setsearchroom(false);
+          setShowChat(true);
+          await axios
+            .post(`http://localhost:3004/vendor_room/joinroom`, {
+              room: parseInt(room.room),
+            })
+            .then((response) => response)
+            .then((json) => json);
+        }
+        // else {
+        //   // if(list2.room2 !== undefined){
+
+        //     console.log(list2.room2);
+        //     // setavailRoom(list2.room2);
+        //     socket.emit("join_room", parseInt(list2.room2));
+        //     setShowChat(true);
+        //     await axios
+        //     .post(`http://localhost:3004/vendors/room`, { room: parseInt(list2.room2) })
+        //     .then((response) => response)
+        //     .then((json) => json);
+        //     setsearchroom(false);
+
+        //   // }
+        // }
+
+        setassignroom(true);
       }
     }
   };
 
-  setInterval(GetRoom, 6000);
+  // useEffect(() => {
+  setInterval(() => {
+    if (searchroom) {
+      GetRoom();
+    }
+  }, 6000);
+  // return () => clearInterval(interval);
+  // });
 
   return (
     <div className="App">
@@ -164,20 +147,6 @@ const UserRegister = () => {
                 animationIn="bounceInRight"
                 animationOut="fadeOut"
                 isVisible={true}
-                component="input"
-              >
-                <input
-                  type="number"
-                  placeholder="Enter your Room..."
-                  onChange={(event) => {
-                    setroom(event.target.value);
-                  }}
-                />
-              </Animated>
-              <Animated
-                animationIn="bounceInRight"
-                animationOut="fadeOut"
-                isVisible={true}
               >
                 <button onClick={JoinRoom}>Join Room</button>
               </Animated>
@@ -189,7 +158,8 @@ const UserRegister = () => {
         <ChatBox
           socket={socket}
           username={username}
-          room={parseInt(room)}
+          // rooms={parseInt(room.room)}
+          rooms={1}
           email={email}
         />
       )}
